@@ -1,0 +1,135 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090a0d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HomeControl">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>HomeControl</title></head>
+<body>
+<div id="toast" class="toast"></div>
+<main class="app">
+
+  <div class="status">
+    <span id="clock">--:--</span>
+    <span id="agentPill" class="agentpill">● checking agent…</span>
+  </div>
+
+  <header>
+    <div><h1 id="pageTitle">HomeControl</h1><div class="subtitle" id="pageSubtitle">Your network, without the tiny router screens from 2009.</div></div>
+    <button class="iconbtn" data-view="settings">⚙︎</button>
+  </header>
+
+  <!-- ============ HOME ============ -->
+  <section id="view-home" class="view">
+    <section class="card hero">
+      <div class="row">
+        <div><div class="label">Internet</div><div class="value" id="internetValue">—</div></div>
+        <span class="pill" id="internetPill">● checking</span>
+      </div>
+      <div class="row">
+        <div class="small">Gateway <b id="gatewayIp">—</b><br>Agent uptime <b id="agentUptime">—</b></div>
+        <button class="action" id="btnTestConnection">Test</button>
+      </div>
+    </section>
+
+    <div class="grid" style="margin-top:12px">
+      <div class="card"><div class="label">Download</div><div class="value" id="dlValue">—</div><div class="small">Mbps</div></div>
+      <div class="card"><div class="label">Latency</div><div class="value" id="latValue">—</div><div class="small">ms to gateway</div></div>
+      <div class="card"><div class="label">Devices</div><div class="value" id="deviceCount">—</div><div class="small">on LAN</div></div>
+      <div class="card"><div class="label">Agent</div><div class="value" id="agentValue">—</div><div class="small" id="agentHost">—</div></div>
+    </div>
+
+    <div class="section">Quick Actions</div>
+    <div class="grid">
+      <button class="card actionCard" id="qaWake">⚡<br><b>Wake device</b><br><span class="small">Wake-on-LAN</span></button>
+      <button class="card actionCard" id="qaPing">⌁<br><b>Ping test</b><br><span class="small">Latency check</span></button>
+      <button class="card actionCard" id="qaVpn">🔒<br><b>VPN</b><br><span class="small" id="qaVpnLabel">Status</span></button>
+      <button class="card actionCard" id="qaReboot">↻<br><b>Reboot router</b><br><span class="small">Needs agent config</span></button>
+    </div>
+  </section>
+
+  <!-- ============ DEVICES ============ -->
+  <section id="view-devices" class="view" hidden>
+    <div class="row" style="margin-bottom:10px">
+      <input id="deviceSearch" placeholder="Search devices…">
+      <button class="secondary" id="btnRescan">↻ Rescan</button>
+    </div>
+    <div id="deviceList" class="card"><div class="empty">Loading devices…</div></div>
+  </section>
+
+  <!-- ============ NETWORK ============ -->
+  <section id="view-network" class="view" hidden>
+    <section class="card hero">
+      <div class="row">
+        <div><div class="label">Download speed</div><div class="value" id="netDl">—</div></div>
+        <button class="action" id="btnSpeedtest">Run test</button>
+      </div>
+      <div class="small" id="netSpeedNote">Tap "Run test" for a fresh reading.</div>
+    </section>
+    <div class="grid" style="margin-top:12px">
+      <div class="card"><div class="label">Gateway</div><div class="value small" id="netGateway">—</div></div>
+      <div class="card"><div class="label">Agent host</div><div class="value small" id="netAgentHost">—</div></div>
+      <div class="card"><div class="label">Agent local IP</div><div class="value small" id="netAgentIp">—</div></div>
+      <div class="card"><div class="label">Agent uptime</div><div class="value small" id="netAgentUptime">—</div></div>
+    </div>
+    <div class="section">Router</div>
+    <div class="card">
+      <div class="row"><div><div class="name">Reboot router</div><div class="small">Runs the command configured in the agent's config.json</div></div>
+      <button class="secondary" id="btnReboot">Reboot</button></div>
+    </div>
+  </section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section id="view-settings" class="view" hidden>
+    <div class="section" style="margin-top:0">Agent connection</div>
+    <div class="card stack">
+      <div>
+        <div class="label" style="margin-bottom:6px">Agent URL</div>
+        <input id="agentUrl" placeholder="https://your-pi.your-tailnet.ts.net">
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:6px">API key</div>
+        <input id="agentKey" placeholder="the apiKey from the agent's config.json" type="password">
+      </div>
+      <div class="row">
+        <span id="settingsStatus" class="small">Not tested yet</span>
+        <button class="action" id="btnSaveAgent">Save & test</button>
+      </div>
+    </div>
+    <p class="small" style="padding:0 4px">The agent runs on your Pi or always-on machine and does the actual network work. See its README for setup — the short version is Tailscale Serve gives you a stable HTTPS address so this page (served over HTTPS) is allowed to talk to it.</p>
+  </section>
+
+</main>
+
+<nav>
+  <button class="navbtn active" data-view="home">⌂<br>Home</button>
+  <button class="navbtn" data-view="devices">▦<br>Devices</button>
+  <button class="navbtn" data-view="network">⌁<br>Network</button>
+  <button class="navbtn" data-view="settings">⚙︎<br>Settings</button>
+</nav>
+
+<div id="wakeModal" class="modal"><div class="sheet">
+  <div class="row"><h2>Wake a device</h2><button class="iconbtn" data-close>×</button></div>
+  <div id="wakeDeviceList" class="stack"></div>
+  <p class="small">Only devices seen recently on the LAN show up here. Enter a MAC manually if yours isn't listed.</p>
+  <div class="stack">
+    <input id="wakeManualMac" placeholder="aa:bb:cc:dd:ee:ff">
+    <button class="action" id="wakeManualBtn">Send wake packet</button>
+  </div>
+</div></div>
+
+<div id="pingModal" class="modal"><div class="sheet">
+  <div class="row"><h2>Ping test</h2><button class="iconbtn" data-close>×</button></div>
+  <div class="stack">
+    <input id="pingHost" placeholder="192.168.1.1 or a hostname">
+    <button class="action" id="pingRunBtn">Ping</button>
+    <div id="pingResult" class="small"></div>
+  </div>
+</div></div>
+
+<script src="app.js"></script></body></html>
